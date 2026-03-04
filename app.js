@@ -12,12 +12,52 @@ const hint = document.getElementById('hint');
 const startBtn = document.getElementById('start-btn');
 
 let scene, camera, renderer;
-let tablePlane = null; // 3D plane showing camera feed (added when camera is on)
+let tablePlane = null;
 let orientationEnabled = false;
 let initialAlpha = null;
 let initialBeta = null;
 let currentAlpha = 0;
 let currentBeta = 0;
+
+// Optional textures from assets/ folder (see ASSETS.md for free downloads)
+const TEXTURE_PATHS = {
+  sand: 'assets/sand.jpg',
+  water: 'assets/water.jpg',
+  shore: 'assets/shore.jpg',
+  rock: 'assets/rock.jpg',
+  bark: 'assets/bark.jpg',
+  leaves: 'assets/leaves.jpg',
+  sky: 'assets/sky.jpg'
+};
+
+function loadTexture(url, repeatX = 1, repeatY = 1) {
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      url,
+      (tex) => {
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(repeatX, repeatY);
+        resolve(tex);
+      },
+      undefined,
+      () => resolve(null)
+    );
+  });
+}
+
+function applyTextures(mats) {
+  const base = typeof window !== 'undefined' && window.location ? window.location.origin + '/' : '';
+  Promise.all([
+    loadTexture(base + TEXTURE_PATHS.sand, 15, 10).then(t => { if (t && mats.sand) mats.sand.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.water, 20, 12).then(t => { if (t && mats.water) mats.water.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.shore, 12, 2).then(t => { if (t && mats.shore) mats.shore.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.rock).then(t => { if (t && mats.rock) mats.rock.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.bark, 1, 4).then(t => { if (t && mats.bark) mats.bark.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.leaves, 2, 2).then(t => { if (t && mats.leaves) mats.leaves.map = t; }),
+    loadTexture(base + TEXTURE_PATHS.sky, 1, 1).then(t => { if (t && mats.sky) { mats.sky.map = t; mats.sky.side = THREE.BackSide; } })
+  ]).catch(() => {});
+}
 
 function resize() {
   if (renderer) {
@@ -37,9 +77,17 @@ function buildScene() {
   camera.position.set(0, 1.2, 3);
   camera.rotation.order = 'YXZ';
 
+  // Materials (solid color by default; textures applied from assets/ if present)
+  const skyMat = new THREE.MeshBasicMaterial({ color: 0x87CEEB, side: THREE.BackSide });
+  const sandMat = new THREE.MeshLambertMaterial({ color: 0xE8D5B7 });
+  const waterMat = new THREE.MeshLambertMaterial({ color: 0x1e90ff });
+  const shoreMat = new THREE.MeshLambertMaterial({ color: 0xF5E6C8 });
+  const rockMat = new THREE.MeshLambertMaterial({ color: 0x5c5c5c });
+  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+  const leavesMat = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+
   // Sky dome
   const skyGeo = new THREE.SphereGeometry(80, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
-  const skyMat = new THREE.MeshBasicMaterial({ color: 0x87CEEB, side: THREE.BackSide });
   const sky = new THREE.Mesh(skyGeo, skyMat);
   sky.position.y = -0.5;
   scene.add(sky);
@@ -50,24 +98,22 @@ function buildScene() {
   scene.add(sun);
 
   const oceanGeo = new THREE.PlaneGeometry(120, 60);
-  const ocean = new THREE.Mesh(oceanGeo, new THREE.MeshLambertMaterial({ color: 0x1e90ff }));
+  const ocean = new THREE.Mesh(oceanGeo, waterMat);
   ocean.rotation.x = -Math.PI / 2;
   ocean.position.set(0, -0.3, -15);
   scene.add(ocean);
 
   const sandGeo = new THREE.PlaneGeometry(100, 50);
-  const sand = new THREE.Mesh(sandGeo, new THREE.MeshLambertMaterial({ color: 0xE8D5B7 }));
+  const sand = new THREE.Mesh(sandGeo, sandMat);
   sand.rotation.x = -Math.PI / 2;
   sand.position.set(0, -0.5, 5);
   scene.add(sand);
 
   const shoreGeo = new THREE.PlaneGeometry(80, 8);
-  const shore = new THREE.Mesh(shoreGeo, new THREE.MeshLambertMaterial({ color: 0xF5E6C8 }));
+  const shore = new THREE.Mesh(shoreGeo, shoreMat);
   shore.rotation.x = -Math.PI / 2;
   shore.position.set(0, -0.45, -2);
   scene.add(shore);
-
-  const rockMat = new THREE.MeshLambertMaterial({ color: 0x5c5c5c });
   [-4, 2, 3.5].forEach((x, i) => {
     const r = new THREE.Mesh(new THREE.SphereGeometry(0.4 + i * 0.15, 12, 12), rockMat);
     r.position.set(x, 0, 1 - i * 0.5);
@@ -75,13 +121,11 @@ function buildScene() {
   });
 
   const trunkGeo = new THREE.CylinderGeometry(0.15, 0.25, 2.5, 12);
-  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
   const trunk = new THREE.Mesh(trunkGeo, trunkMat);
   trunk.position.set(-3, 0.8, -1);
   scene.add(trunk);
 
   const leavesGeo = new THREE.ConeGeometry(1.2, 1.8, 8);
-  const leavesMat = new THREE.MeshLambertMaterial({ color: 0x228B22 });
   const leaves = new THREE.Mesh(leavesGeo, leavesMat);
   leaves.position.set(-3, 2.2, -1);
   scene.add(leaves);
@@ -205,6 +249,17 @@ function buildScene() {
   const fill = new THREE.DirectionalLight(0xccddff, 0.4);
   fill.position.set(-10, 10, 10);
   scene.add(fill);
+
+  // Load optional textures from assets/ (see ASSETS.md for free sources)
+  applyTextures({
+    sand: sandMat,
+    water: waterMat,
+    shore: shoreMat,
+    rock: rockMat,
+    bark: trunkMat,
+    leaves: leavesMat,
+    sky: skyMat
+  });
 }
 
 function addTableWindow() {

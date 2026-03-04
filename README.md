@@ -83,10 +83,16 @@ After deploying, open the **https://** URL on your iPhone, tap **“Tap to enabl
 
 Opening `index.html` directly (e.g. double‑click) loads the 3D scene, but the camera will not work (no origin, no HTTPS). The cutout area will appear dark.
 
+## Optional: realistic textures
+
+For a more realistic look, you can add image textures (sand, water, rock, etc.) to the **`assets/`** folder. The app will use them automatically. See **[ASSETS.md](ASSETS.md)** for exact filenames and free download links (Poly Haven, ambientCG).
+
 ## Project structure
 
-- `index.html` — Page, camera `<video>`, canvas, meta tags for mobile.
-- `app.js` — Three.js café scene, cutout (scissor), camera stream.
+- `index.html` — Page, camera, canvas, meta tags for mobile.
+- `app.js` — Three.js beach scene, device orientation, camera-as-table, texture loading.
+- `assets/` — Optional: put texture images here (see ASSETS.md).
+- `ASSETS.md` — Guide to free textures and required filenames.
 - `README.md` — This file.
 
 ## Tech
