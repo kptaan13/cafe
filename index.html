@@ -15,20 +15,30 @@
       background: #1a0f0a;
       -webkit-tap-highlight-color: transparent;
     }
-    #camera-video {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: 0;
-    }
     #scene-canvas {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       display: block;
-      z-index: 1;
+      z-index: 0;
       pointer-events: none;
+    }
+    #camera-cutout {
+      position: fixed;
+      left: 12%; top: 32%;
+      width: 76%; height: 52%;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.3);
+      display: none;
+      pointer-events: none;
+    }
+    #camera-cutout.visible { display: block; }
+    #camera-video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
     }
     #hint {
       position: fixed;
@@ -69,10 +79,12 @@
   </style>
 </head>
 <body>
-  <video id="camera-video" autoplay playsinline muted></video>
   <canvas id="scene-canvas"></canvas>
+  <div id="camera-cutout">
+    <video id="camera-video" autoplay playsinline muted></video>
+  </div>
   <button type="button" id="start-btn">Tap to enable camera</button>
-  <p id="hint">Place your food & drinks in the frame below.<br>Works best over HTTPS on your phone.</p>
+  <p id="hint">Tap the button, then place your food & drinks in the frame.<br>Works over HTTPS on your phone.</p>
 
   <script type="importmap">
     {

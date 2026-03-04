@@ -8,6 +8,28 @@ A **mixed reality** prototype: a simple 3D café scene with a **cutout** where y
 - **Cutout**: A clear “window” in the center of the screen showing the **live camera** — place your real plate and cup there so it looks like they’re in the virtual café.
 - **Phone-first**: Works in **Safari on iPhone** (and other modern mobile browsers) over **HTTPS**.
 
+## Push to GitHub
+
+From the project folder in a terminal:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit: Virtual Café mixed reality MVP"
+```
+
+Then create a new repository on [github.com](https://github.com/new) (do **not** add a README or .gitignore there). Copy its URL (e.g. `https://github.com/yourusername/virtual-cafe.git`) and run:
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git branch -M main
+git push -u origin main
+```
+
+Replace `YOUR_USERNAME` and `YOUR_REPO` with your GitHub username and repo name. If GitHub asks you to sign in, use a personal access token instead of your password.
+
+---
+
 ## Quick start (localhost)
 
 From the project folder run:
