@@ -95,6 +95,109 @@ function buildScene() {
   leaves2.scale.setScalar(0.7);
   scene.add(leaves2);
 
+  // Third palm (mid-distance)
+  const trunk3 = new THREE.Mesh(trunkGeo.clone(), trunkMat);
+  trunk3.position.set(-5, 0.7, -8);
+  trunk3.scale.set(0.85, 0.9, 0.85);
+  scene.add(trunk3);
+  const leaves3 = new THREE.Mesh(leavesGeo.clone(), leavesMat);
+  leaves3.position.set(-5, 2, -8);
+  leaves3.scale.setScalar(0.85);
+  scene.add(leaves3);
+
+  // Clouds (soft white spheres)
+  const cloudMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const cloudPositions = [
+    [ -15, 18, -50 ], [ -10, 20, -52 ], [ -5, 17, -51 ],
+    [ 20, 22, -55 ], [ 25, 19, -54 ], [ 30, 21, -56 ],
+    [ 0, 25, -60 ], [ 8, 23, -58 ]
+  ];
+  cloudPositions.forEach(([ x, y, z ], i) => {
+    const c = new THREE.Mesh(new THREE.SphereGeometry(6 + (i % 3) * 2, 12, 8), cloudMat);
+    c.position.set(x, y, z);
+    c.scale.set(1, 0.6, 1.2);
+    scene.add(c);
+  });
+
+  // Wave foam along shore
+  const foamGeo = new THREE.PlaneGeometry(90, 4);
+  const foamMat = new THREE.MeshBasicMaterial({ color: 0xb8d4e8 });
+  const foam = new THREE.Mesh(foamGeo, foamMat);
+  foam.rotation.x = -Math.PI / 2;
+  foam.position.set(0, -0.35, -4);
+  scene.add(foam);
+
+  // Beach umbrella (pole + canopy)
+  const poleGeo = new THREE.CylinderGeometry(0.04, 0.05, 2.2, 8);
+  const poleMat = new THREE.MeshLambertMaterial({ color: 0x2c1810 });
+  const pole = new THREE.Mesh(poleGeo, poleMat);
+  pole.position.set(2.5, 1.1, 0.5);
+  scene.add(pole);
+  const canopyGeo = new THREE.ConeGeometry(0.9, 0.6, 8);
+  const canopyMat = new THREE.MeshLambertMaterial({ color: 0xe74c3c });
+  const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+  canopy.position.set(2.5, 2.3, 0.5);
+  canopy.rotation.x = Math.PI / 2;
+  scene.add(canopy);
+
+  // Beach towel (strip on sand)
+  const towelGeo = new THREE.PlaneGeometry(1.8, 0.8);
+  const towelMat = new THREE.MeshLambertMaterial({ color: 0x3498db });
+  const towel = new THREE.Mesh(towelGeo, towelMat);
+  towel.rotation.x = -Math.PI / 2;
+  towel.position.set(-2, -0.48, 0.8);
+  towel.rotation.z = 0.15;
+  scene.add(towel);
+
+  // More rocks and small "shells" (tiny spheres)
+  const shellMat = new THREE.MeshLambertMaterial({ color: 0xf5deb3 });
+  [ [ -1.5, 0.1, 1.2 ], [ -1.2, 0.08, 1.5 ], [ 1.8, 0.06, 0.9 ], [ 2.1, 0.09, 1.1 ] ].forEach(([ x, y, z ]) => {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), shellMat);
+    s.position.set(x, y, z);
+    scene.add(s);
+  });
+  [ [ 3, 0.15, -1 ], [ -3.5, 0.2, 0.5 ], [ 0.5, 0.12, 1.8 ] ].forEach(([ x, y, z ], i) => {
+    const r = new THREE.Mesh(new THREE.SphereGeometry(0.25 + i * 0.08, 10, 8), rockMat);
+    r.position.set(x, y, z);
+    scene.add(r);
+  });
+
+  // Seagulls (simple elongated diamonds)
+  const gullMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const gullGeo = new THREE.ConeGeometry(0.15, 0.5, 4);
+  [ [ -8, 12, -35 ], [ 5, 14, -40 ], [ 12, 10, -38 ] ].forEach(([ x, y, z ]) => {
+    const g = new THREE.Mesh(gullGeo, gullMat);
+    g.position.set(x, y, z);
+    g.rotation.z = Math.PI / 2;
+    g.scale.set(1, 2, 0.3);
+    scene.add(g);
+  });
+
+  // Distant boat silhouette (simple box + cone)
+  const boatMat = new THREE.MeshBasicMaterial({ color: 0x2c3e50 });
+  const hull = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 0.8), boatMat);
+  hull.position.set(18, 0.2, -25);
+  scene.add(hull);
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 1.5, 6), boatMat);
+  mast.position.set(18, 1.15, -25);
+  scene.add(mast);
+  const sail = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.2), new THREE.MeshBasicMaterial({ color: 0xecf0f1 }));
+  sail.position.set(18, 1.1, -25);
+  sail.rotation.y = Math.PI / 4;
+  scene.add(sail);
+
+  // Bush / grass clump
+  const bushGeo = new THREE.SphereGeometry(0.5, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2);
+  const bushMat = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+  const bush = new THREE.Mesh(bushGeo, bushMat);
+  bush.position.set(3.5, 0.25, 1.2);
+  bush.scale.set(1.2, 0.5, 1);
+  scene.add(bush);
+  const bush2 = new THREE.Mesh(bushGeo.clone(), bushMat);
+  bush2.position.set(-4, 0.2, 0.3);
+  bush2.scale.set(0.8, 0.4, 0.8);
+  scene.add(bush2);
+
   scene.add(new THREE.AmbientLight(0xaaccff, 0.5));
   const sunLight = new THREE.DirectionalLight(0xffeedd, 1);
   sunLight.position.set(20, 40, -30);
