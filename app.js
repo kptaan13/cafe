@@ -77,8 +77,8 @@ function loadPanorama() {
 const SEATED_EYE_Y = 0.5;
 const SEATED_EYE_Z = 0.12;
 const TABLE_SURFACE_Y = -0.18;
-const TABLE_Z = 0.45;
-const SEATED_LOOK_DOWN_RAD = -0.32;
+const TABLE_Z = 0.38;
+const SEATED_LOOK_DOWN_RAD = -1.15;
 let tableGroup = null;
 let cutoutMesh = null;
 function buildPanoramaScene(panoramaTexture, isHdr = false) {
@@ -149,8 +149,9 @@ function buildScene() {
   cutoutMesh = null;
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 1.2, 3);
+  camera.position.set(0, SEATED_EYE_Y, SEATED_EYE_Z);
   camera.rotation.order = 'YXZ';
+  camera.lookAt(0, TABLE_SURFACE_Y, TABLE_Z);
 
   const skyMat = new THREE.MeshBasicMaterial({ color: 0x87CEEB, side: THREE.BackSide });
   const sandMat = new THREE.MeshLambertMaterial({ color: 0xE8D5B7 });
